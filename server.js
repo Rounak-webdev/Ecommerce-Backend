@@ -9,12 +9,6 @@ const user_model =require ("./Models/user.model")
 const bcrypt = require("bcryptjs")
 
 
-/**
- * start the server 
- */
-app.listen (server_config.PORT , ()=>{
-   console.log("Server Started at port num : ", server_config.PORT)
-})
 
 /**
  * create an admin user at the starting of the application
@@ -34,11 +28,15 @@ db.once("open" ,()=>{
 
 
  async function init (){
-    let  user = await  user_model.findOne( {userId :"admin"})
+    try{
+       let  user = await  user_model.findOne( {userId :"admin"})
 
-    if (user){
+       if (user){
         console.log("Admin is already present ")
         return 
+       }
+    }catch(err){
+        console.log("Error while reading the data",err)
     }
     try{
         user= await user_model.create({
@@ -56,3 +54,17 @@ db.once("open" ,()=>{
     }
 
 }
+
+
+
+/**
+ * calls routes and passing to app object
+ */
+require("./Router/Auth.route")(app)
+/**
+ * start the server 
+ */
+app.listen (server_config.PORT , ()=>{
+    console.log("Server Started at port num : ", server_config.PORT)
+ })
+ 
